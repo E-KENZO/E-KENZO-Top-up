@@ -1,0 +1,36 @@
+E-KENZO Telegram Order Bot Setup
+
+1) Create a Telegram bot
+- Open Telegram and search @BotFather.
+- Send /newbot.
+- Choose a bot name, for example: E-KENZO Order Bot.
+- Choose a username ending in Bot, for example: EKenzo_Order_Bot.
+- BotFather gives you a BOT TOKEN. Keep it secret. Do not put it in index.html.
+
+2) Deploy worker.js to Cloudflare Workers
+- Create a Worker.
+- Paste worker.js.
+- Add secret/variable: TELEGRAM_BOT_TOKEN = your BotFather token.
+- Add variable/secret: ADMIN_CHAT_ID = your numeric Telegram chat ID.
+
+3) Get your numeric Telegram Chat ID
+- After deploying, set the Telegram webhook to your Worker URL + /telegram/webhook.
+- Open your new bot and send /start.
+- The bot replies with your numeric Chat ID.
+- Put that number into ADMIN_CHAT_ID and redeploy.
+
+Webhook URL example:
+https://api.telegram.org/botYOUR_BOT_TOKEN/setWebhook?url=https://YOUR-WORKER.workers.dev/telegram/webhook
+
+4) Connect the website
+- In E-KENZO-index.html, change:
+  fetch("/api/order", ...)
+  to your Worker API URL if the website and Worker are on different domains, for example:
+  fetch("https://YOUR-WORKER.workers.dev/api/order", ...)
+
+5) Important
+- GitHub Pages alone cannot securely send a receipt directly to Telegram with a bot token.
+- The bot token must stay on the Worker/server.
+- The customer receipt is sent to the Telegram chat configured by ADMIN_CHAT_ID.
+- The bot sends: Order ID, package, price, Roblox username, Telegram username, KHQR payment method, receipt image, and WAITING FOR ADMIN status.
+- The bot does NOT mark payment as PAID automatically. Admin must verify the transaction.
